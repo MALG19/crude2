@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <title>Registro de Usuario</title>
+    <style>
+        .form-container {
+            max-width: 400px; /* Ajusta el ancho del formulario */
+            margin: auto; /* Centrar horizontalmente */
+            padding: 20px; /* Espaciado interno */
+            border: 1px solid #ccc; /* Borde opcional */
+            border-radius: 10px; /* Esquinas redondeadas opcional */
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1); /* Sombra opcional */
+        }
+        .btn-custom:hover {
+            background-color: #007bff; /* Azul más claro */
+            color: white; /* Color de texto blanco */
+        }
+    </style>
+</head>
+<body>
+    <div class="container-fluid bg-primary text-white text-center p-1">
+        <h2>Tienda de Mascotas</h2>
+        <div class="container mt-4 d-flex justify-content-end">
+            <a href="index.html" class="btn btn-prymary btn-custom mr-2">Registro de Usuarios</a>
+            <a href="listaUsuarios.html" class="btn btn-prymary btn-custom mr-2">Lista de Usuarios</a>
+            <a href="servicios.html" class="btn btn-prymary btn-custom mr-2">Servicios</a>
+            <a href="admiServicio.html" class="btn btn-prymary btn-custom mr-2">Adm Servicios</a>
+            <a href="mascotas.html" class="btn btn-prymary btn-custom mr-2">Crear mascota</a>
+            <a href="listaMascotas.html" class="btn btn-prymary btn-custom mr-2">Lista de Mascotas</a>
+        </div>
+    </div>
+
+    <div class="container mt-5">
+        <h2 class="text-center">Registro de Usuario</h2>
+        <div class="form-container">
+            <form id="usuarioForm">
+                <div class="form-group">
+                    <label for="cedula">Cédula</label>
+                    <input type="number" class="form-control" id="cedula" placeholder="Ingrese su cédula" required>
+                </div>
+                <div class="form-group">
+                    <label for="nombre">Nombre</label>
+                    <input type="text" class="form-control" id="nombre" placeholder="Ingrese su nombre" required>
+                </div>
+                <div class="form-group">
+                    <label for="apellido">Apellido</label>
+                    <input type="text" class="form-control" id="apellido" placeholder="Ingrese su apellido" required>
+                </div>
+                <div class="form-group">
+                    <label for="email">Correo Electrónico</label>
+                    <input type="email" class="form-control" id="email" placeholder="Ingrese su correo" required>
+                </div>
+                <div class="form-group">
+                    <label for="telefono">Teléfono</label>
+                    <input type="text" class="form-control" id="telefono" placeholder="Ingrese su teléfono" required>
+                </div>
+                <button type="submit" class="btn btn-primary btn-block">Registrar Usuario</button>
+            </form>
+        </div>
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
+    <script>
+        $(document).ready(function() {
+            $('#usuarioForm').on('submit', function(e) {
+                e.preventDefault();
+                
+                const userData = {
+                    cedula: $('#cedula').val(),
+                    nombre: $('#nombre').val(),
+                    apellido: $('#apellido').val(),
+                    email: $('#email').val(),
+                    telefono: $('#telefono').val()
+                };
+
+                // Enviar datos al backend
+                fetch('http://localhost:8080/api/v1/usuarios', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(userData),
+                })
+                .then(response => {
+                    if (response.ok) {
+                        return response.json(); // Extraer JSON de la respuesta
+                    } else {
+                        throw new Error('Error al registrar el usuario');
+                    }
+                })
+                .then(data => {
+                    alert('Usuario registrado exitosamente');
+                })
+                .catch(error => {
+                    alert(error.message); // Mostrar mensaje de error
+                    console.error('Error:', error);
+                });
+            });
+        });
+    </script>
+</body>
+</html>

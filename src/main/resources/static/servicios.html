@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Servicios</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <style>
+        .card {
+            margin: 20px;
+        }
+        .btn-custom:hover {
+            background-color: #007bff;
+            color: white;
+        }
+    </style>
+</head>
+<body>
+    <div class="container-fluid bg-primary text-white text-center p-1">
+        <h2>Tienda de Mascotas</h2>
+        <div class="container mt-4 d-flex justify-content-end">
+            <a href="index.html" class="btn btn-prymary btn-custom mr-2">Registro de Usuarios</a>
+            <a href="listaUsuarios.html" class="btn btn-prymary btn-custom mr-2">Lista de Usuarios</a>
+            <a href="servicios.html" class="btn btn-prymary btn-custom mr-2">Servicios</a>
+            <a href="admiServicio.html" class="btn btn-prymary btn-custom mr-2">Adm Servicios</a>
+            <a href="mascotas.html" class="btn btn-prymary btn-custom mr-2">Crear mascota</a>
+            <a href="listaMascotas.html" class="btn btn-prymary btn-custom mr-2">Lista de Mascotas</a>
+        </div>
+    </div>
+
+    <div class="container">
+        <h2 class="text-center mt-5">Servicios Disponibles</h2>
+        <div id="services" class="row"></div>
+    </div>
+
+    <script>
+        const renderServices = (servicios) => {
+            const servicesContainer = document.getElementById('services');
+            servicios.forEach(servicio => {
+                const card = `
+                    <div class="col-md-4">
+                        <div class="card bg-primary text-white">
+                            <div class="card-body">
+                                <h5 class="card-title">${servicio.nombre}</h5>
+                                <p class="card-text">${servicio.descripcion}</p>
+                                <p class="card-text">Precio: ${servicio.precio}</p>
+                            </div>
+                        </div>
+                    </div>
+                `;
+                servicesContainer.innerHTML += card;
+            });
+        };
+
+        // Hacer la solicitud a la API
+        fetch('api/v1/servicios')
+            .then(response => response.json())
+            .then(data => {
+                renderServices(data);
+            })
+            .catch(error => console.error('Error:', error));
+    </script>
+
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.2/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</body>
+</html>

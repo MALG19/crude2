@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lista de Mascotas</title>
+    <link href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            background-color: #e9f1f5;  /* Fondo suave */
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        th, td {
+            text-align: left;
+        }
+        th {
+            background-color: #007bff;  /* Azul fuerte */
+            color: white;
+        }
+        tr:nth-child(even) {
+            background-color: #cce5ff;  /* Azul claro para filas pares */
+        }
+        tr:hover {
+            background-color: #b3d7ff;  /* Efecto hover más claro */
+        }
+        button {
+            margin: 0 5px;
+        }
+        .btn-custom:hover {
+            background-color: #007bff; /* Azul más claro */
+            color: white; /* Color de texto blanco */
+        }
+    </style>
+</head>
+<body>
+    <div class="container-fluid bg-primary text-white text-center p-1">
+        <h2>Tienda de Mascotas</h2>
+        <div class="container mt-4 d-flex justify-content-end">
+            <a href="index.html" class="btn btn-primary btn-custom mr-2">Registro de Usuarios</a>
+            <a href="listaUsuarios.html" class="btn btn-primary btn-custom mr-2">Lista de Usuarios</a>
+            <a href="servicios.html" class="btn btn-primary btn-custom mr-2">Servicios</a>
+            <a href="admiServicio.html" class="btn btn-primary btn-custom mr-2">Adm Servicios</a>
+            <a href="mascotas.html" class="btn btn-primary btn-custom mr-2">Crear mascota</a>
+            <a href="listaMascotas.html" class="btn btn-primary btn-custom mr-2">Lista de Mascotas</a>
+        </div>
+    </div>
+    <div class="container mt-4">
+        <h2 class="text-center">Lista de Mascotas</h2>
+        <table id="data-table" class="table table-bordered table-striped">
+            <thead>
+                <tr>
+                    <th>Cédula</th>
+                    <th>Nombre del Dueño</th>
+                    <th>Apellido del Dueño</th>
+                    <th>Teléfono</th>
+                    <th>Dirección</th>
+                    <th>Nombre de la Mascota</th>
+                    <th>Tipo de Mascota</th>
+                    <th>Edad</th>
+                    <th>Acciones</th>
+                </tr>
+            </thead>
+            <tbody>
+            </tbody>
+        </table>
+    </div>
+
+    <script>
+        const apiUrl = 'http://localhost:8080/api/v1/mascotas';  // Cambia esto si tu puerto es diferente
+
+        async function fetchData() {
+            try {
+                const response = await fetch(apiUrl);
+                if (!response.ok) throw new Error('Error en la red');
+                const data = await response.json();
+                const tableBody = document.getElementById('data-table').querySelector('tbody');
+                tableBody.innerHTML = '';
+
+                data.forEach(item => {
+                    const row = document.createElement('tr');
+                    row.innerHTML = `
+                        <td>${item.cedula}</td>
+                        <td>${item.nombreDueno}</td>
+                        <td>${item.apellidoDueno}</td>
+                        <td>${item.telefono}</td>
+                        <td>${item.direccion}</td>
+                        <td>${item.nombre}</td>
+                        <td>${item.tipo}</td>
+                        <td>${item.edad}</td>
+                        <td>
+                            <button class="btn btn-warning" onclick="editarMascota(${item.id})">Editar</button>
+                            <button class="btn btn-danger" onclick="deleteItem(${item.id})">Eliminar</button>
+                        </td>
+                    `;
+                    tableBody.appendChild(row);
+                });
+            } catch (error) {
+                console.error('Error al obtener los datos:', error);
+            }
+        }
+
+        const editarMascota = (id) => {
+            const newNombre = prompt("Ingrese el nuevo nombre de la mascota:");
+            const newTipo = prompt("Ingrese el nuevo tipo de mascota (ej. perro, gato):");
+            const newEdad = prompt("Ingrese la nueva edad de la mascota:");
+            const newTelefono = prompt("Ingrese el nuevo teléfono del dueño:");
+            const newNombreDueno = prompt("Ingrese el nuevo nombre del dueño:");
+            const newApellidoDueno = prompt("Ingrese el nuevo apellido del dueño:");
+            const newCedula = prompt("Ingrese la nueva cédula del dueño:");
+            const newDireccion = prompt("Ingrese la nueva dirección del dueño:");
+
+            if (newNombre && newTipo && newEdad && newTelefono && newNombreDueno && newApellidoDueno && newCedula && newDireccion) {
+                const mascotaData = {
+                    id: id,
+                    nombre: newNombre,
+                    tipo: newTipo,
+                    edad: parseInt(newEdad),
+                    telefono: newTelefono,
+                    nombreDueno: newNombreDueno,
+                    apellidoDueno: newApellidoDueno,
+                    cedula: newCedula,
+                    direccion: newDireccion
+                };
+
+                fetch(`${apiUrl}/${id}`, {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(mascotaData),
+                })
+                .then(response => {
+                    if (response.ok) {
+                        alert('Mascota actualizada exitosamente');
+                        fetchData(); // Recargar la lista de mascotas
+                    } else {
+                        alert('Error al actualizar la mascota');
+                    }
+                })
+                .catch(error => console.error('Error:', error));
+            }
+        };
+
+        async function deleteItem(id) {
+            const confirmDelete = confirm('¿Estás seguro de que deseas eliminar esta mascota?');
+            if (confirmDelete) {
+                try {
+                    await fetch(`${apiUrl}/${id}`, {
+                        method: 'DELETE'
+                    });
+                    fetchData(); // Volver a cargar los datos después de eliminar
+                } catch (error) {
+                    console.error('Error al eliminar la mascota:', error);
+                }
+            }
+        }
+
+        window.onload = fetchData;
+    </script>
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.2/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</body>
+</html>
